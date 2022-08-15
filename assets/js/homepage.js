@@ -8,4 +8,6 @@ var getUserRepos = function(user) {
             console.log(data);
         });
     });
-} ;
+};
+
+getUserRepos("jlara65");

@@ -69,7 +69,6 @@ var getFeaturedRepos = function(language) {
     });
 };
 
-
 var displayRepos = function(repos, searchTerm) {
 
     // check if api returned any repos

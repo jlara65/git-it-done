@@ -2,6 +2,34 @@ var userFormEl = document.querySelector("#user-form");
 var nameInputEl = document.querySelector("#username");
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repos-search-term");
+var languageButtonsEl = document.querySelector("#language-buttons");
+
+var formSubmitHandler = function (event) {
+    event.preventDefault();
+    // get value from input element
+    var username = nameInputEl.value.trim();
+
+    if (username) {
+        getUserRepos(username);
+        repoContainerEl.textContent = "";
+        nameInputEl.value = "";
+    }else {
+        alert("Please enter a GitHub username");
+    }
+};
+
+var buttonClickHandler = function(event) {
+    var language = event.target.getAttribute("data-language");
+
+    if (language) {
+        getFeaturedRepos(language);
+
+        //clear old content
+        repoContainerEl.textContent = "";
+    }
+    console.log(language);
+
+};
 
 var getUserRepos = function(user) {
     // format the github api url
@@ -27,19 +55,20 @@ var getUserRepos = function(user) {
     });
 };
 
-var formSubmitHandler = function (event) {
-    event.preventDefault();
-    // get value from input element
-    var username = nameInputEl.value.trim();
+var getFeaturedRepos = function(language) {
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
 
-    if (username) {
-        getUserRepos(username);
-        repoContainerEl.textContent = "";
-        nameInputEl.value = "";
-    }else {
-        alert("Please enter a GitHub username");
-    }
+    fetch(apiUrl).then(function(response) {
+        if (response.ok) {
+            response.json().then(function(data) {
+                displayRepos(data.items, language);
+            });
+        } else {
+            alert('Error: ' + response.statusText);
+        }
+    });
 };
+
 
 var displayRepos = function(repos, searchTerm) {
 
@@ -53,7 +82,7 @@ var displayRepos = function(repos, searchTerm) {
 
    // loop over repos
 
-   for (var i=0; i<repos.length; i++) {
+   for (var i = 0; i < repos.length; i++) {
     // format repo name 
     var repoName = repos[i].owner.login + "/" + repos[i].name;
 
@@ -88,5 +117,9 @@ var displayRepos = function(repos, searchTerm) {
    }
 };
 
+
+
+
 // add event listeners to forms
 userFormEl.addEventListener("submit", formSubmitHandler);
+languageButtonsEl.addEventListener("click", buttonClickHandler);
